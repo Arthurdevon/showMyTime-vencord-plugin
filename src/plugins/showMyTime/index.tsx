@@ -2,24 +2,24 @@ import { definePlugin, ApplicationCommandOptionType } from "@utils/types";
 
 export default definePlugin({
     name: "ShowMyTime",
-    description: "Gera timestamps do Discord baseados na hora local do seu PC.",
-    authors: [{ name: "Arthurdevon", id: 111111111111111111n }],
+    description: "Generates Discord timestamps based on your local PC time.",
+    authors: [{ name: "Arthurdevon", id: 1072644260140163212n }],
     tags: ["Utility", "Text"],
     
     commands: [
         {
             name: "mytime",
-            description: "Pega a hora atual no formato de timestamp do Discord",
+            description: "Gets the current time in Discord timestamp format",
             options: [
                 {
                     type: ApplicationCommandOptionType.STRING,
                     name: "format",
-                    description: "Escolha o formato de exibição",
+                    description: "Choose the display format",
                     required: true,
                     choices: [
-                        { name: "Relativo (Contagem Regressiva)", value: "R" },
-                        { name: "Data e Hora Completa", value: "F" },
-                        { name: "Hora Curta", value: "t" }
+                        { name: "Relative (Countdown)", value: "R" },
+                        { name: "Full Date and Time", value: "F" },
+                        { name: "Short Time", value: "t" }
                     ]
                 }
             ],
