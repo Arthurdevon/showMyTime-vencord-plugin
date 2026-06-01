@@ -1,16 +1,14 @@
 # showMyTime
 
-A simple and lightweight Vencord plugin that adds a `/mytime` slash command to quickly generate and send Discord timestamps based on your local system clock.
+Quick Vencord plugin to generate and send Discord timestamps using your local system clock.
+
+## How to use
+Just type `/mytime` in any chat and pick a format:
+* `R` - Relative time (countdown)
+* `F` - Full date and time
+* `t` - Short time (hours and minutes)
 
 ## Installation
-
-1. Copy the `src/plugins/showMyTime` folder into your Vencord installation's `src/plugins/` directory.
-2. Run `pnpm buildStandalone` (or your preferred build command) in your Vencord repository.
-3. Relaunch Discord and enable `showMyTime` in your Vencord settings.
-
-## Usage
-
-Type `/mytime` in any chat and choose a format:
-- **Relative (R):** Countdown/relative time (e.g., *in 10 minutes*).
-- **Full (F):** Full date and time.
-- **Short Time (t):** Just the hours and minutes.
+1. Drop the `showMyTime` folder into your Vencord's `src/plugins/` directory.
+2. Build Vencord (`pnpm buildStandalone`).
+3. Enable `showMyTime` in your Vencord settings.
