@@ -5,12 +5,17 @@ Quick Vencord plugin to generate and send Discord timestamps using your local sy
 ## Previews
 
 ### Command Menu
+The `/mytime` command with autocomplete options.
 ![Command Menu](assets/preview.png)
 
-### Formats Example
-* **Relative Time (R):** ![Relative](assets/relativo.png)
-* **Full Date/Time (F):** ![Full Date](<assets/data completa.png>)
-* **Short Time (t):** ![Short Time](assets/curto.png)
+### Format Examples
+A clean comparison of the available timestamp formats.
+
+| Format Name | Argument | Output Preview | Description |
+|---|:---:|---|---|
+| **Relative Time** | `R` | ![Relative](assets/relativo.png) | Countdown (e.g., *in 10 minutes*) |
+| **Full Date/Time**| `F` | ![Full Date](assets/data_completa.png) | Complete date and time string |
+| **Short Time** | `t` | ![Short Time](assets/curto.png) | Just hours and minutes |
 
 ## How to use
 Just type `/mytime` in any chat and pick a format:
