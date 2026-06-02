@@ -1,5 +1,6 @@
 import definePlugin from "@utils/types";
 import { ApplicationCommandInputType, ApplicationCommandOptionType } from "@api/Commands";
+import { copyToClipboard } from "@utils/clipboard";
 
 const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})(?:\s(\d{2}):(\d{2})(?::(\d{2}))?)?$/;
 
@@ -56,16 +57,25 @@ export default definePlugin({
                 const format = args[0].value as string;
                 const dateArg = args[1]?.value as string | undefined;
 
+                let unix: number;
                 if (dateArg) {
-                    const unix = parseDate(dateArg);
-                    if (unix === null) return {
+                    const parsed = parseDate(dateArg);
+                    if (parsed === null) return {
                         content: `Invalid date: "${dateArg}". Use YYYY-MM-DD, YYYY-MM-DD HH:mm, or YYYY-MM-DD HH:mm:ss`,
-                        flags: 64 // ephemeral
+                        flags: 64
                     };
-                    return { content: `<t:${unix}:${format}>` };
+                    unix = parsed;
+                } else {
+                    unix = Math.floor(Date.now() / 1000);
                 }
 
-                return { content: `<t:${Math.floor(Date.now() / 1000)}:${format}>` };
+                const code = `<t:${unix}:${format}>`;
+                copyToClipboard(code);
+
+                return {
+                    content: `${new Date(unix * 1000).toLocaleString()} — ${code} copied to clipboard`,
+                    flags: 64
+                };
             }
         }
     ]
