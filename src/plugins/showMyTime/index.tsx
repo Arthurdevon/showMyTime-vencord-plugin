@@ -1,5 +1,5 @@
 import definePlugin from "@utils/types";
-import { ApplicationCommandInputType, ApplicationCommandOptionType, findOption, sendBotMessage } from "@api/Commands";
+import { ApplicationCommandInputType, ApplicationCommandOptionType, findOption } from "@api/Commands";
 import { copyToClipboard } from "@utils/clipboard";
 
 const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})(?:\s(\d{2}):(\d{2})(?::(\d{2}))?)?$/;
@@ -53,19 +53,17 @@ export default definePlugin({
                     required: false
                 }
             ],
-            execute(args: any[], ctx: any) {
+            execute(args: any[]) {
                 const format = findOption(args, "format", "F");
                 const dateArg = findOption<string | undefined>(args, "date", void 0);
 
                 let unix: number;
                 if (dateArg) {
                     const parsed = parseDate(dateArg);
-                    if (parsed === null) {
-                        sendBotMessage(ctx.channel.id, {
-                            content: `Invalid date: "${dateArg}". Use YYYY-MM-DD, YYYY-MM-DD HH:mm, or YYYY-MM-DD HH:mm:ss`,
-                        });
-                        return;
-                    }
+                    if (parsed === null) return {
+                        content: `Invalid date: "${dateArg}". Use YYYY-MM-DD, YYYY-MM-DD HH:mm, or YYYY-MM-DD HH:mm:ss`,
+                        flags: 64
+                    };
                     unix = parsed;
                 } else {
                     unix = Math.floor(Date.now() / 1000);
@@ -73,9 +71,11 @@ export default definePlugin({
 
                 const code = `<t:${unix}:${format}>`;
                 copyToClipboard(code);
-                sendBotMessage(ctx.channel.id, {
+
+                return {
                     content: `${new Date(unix * 1000).toLocaleString()} — ${code} (copied)`,
-                });
+                    flags: 64
+                };
             }
         }
     ]
