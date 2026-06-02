@@ -8,7 +8,9 @@ Discord's `<t:UNIX:FORMAT>` markup renders timestamps relative to whoever reads 
 
 - `/mytime` slash command with 7 timestamp format options
 - Optional custom date input (defaults to now)
-- Invalid dates are rejected with an ephemeral error
+- Response is a Clyde message only you can see, with a human-readable preview
+- Timestamp code is copied to clipboard automatically
+- Invalid dates are rejected with an error message
 
 ## Usage
 
@@ -16,17 +18,19 @@ Discord's `<t:UNIX:FORMAT>` markup renders timestamps relative to whoever reads 
 /mytime format:"Full Date/Time" date:"2026-06-15 20:00"
 ```
 
-Output: `<t:1750017600:F>`
+Clyde responds (only visible to you):
 
-Paste the output into a chat — Discord renders it as `Monday, June 15, 2026 20:00` in the viewer's local timezone.
+```
+15/06/2026, 20:00:00 — <t:1780695000:F> (copied)
+```
+
+The code is already in your clipboard — just paste it into your message. Discord renders `<t:1780695000:F>` as `Monday, June 15, 2026 8:00 PM` in each viewer's local timezone.
 
 Without a date argument, the timestamp is for the current moment:
 
 ```
 /mytime format:"Relative"
 ```
-
-Output: `<t:1750017600:R>` → `Just now`
 
 ## Supported formats
 
@@ -49,7 +53,7 @@ Accepts three formats. All are parsed in local time:
 - `YYYY-MM-DD HH:mm:ss`
 - `YYYY-MM-DDTHH:mm:ss` (ISO-style `T` separator, normalized internally)
 
-Invalid dates return an ephemeral error only visible to you.
+Invalid dates return a Clyde error message.
 
 ## Installation
 
