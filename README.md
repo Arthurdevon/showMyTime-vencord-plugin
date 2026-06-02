@@ -8,7 +8,7 @@ Discord's `<t:UNIX:FORMAT>` markup renders timestamps relative to whoever reads 
 
 - `/mytime` slash command with 7 timestamp format options
 - Optional custom date input (defaults to now)
-- Response is ephemeral — only you see it
+- Response is private — only you see it
 - Timestamp code is copied to clipboard automatically
 - Human-readable preview so you can verify the date/time
 - Invalid dates are rejected with an error message
@@ -54,7 +54,7 @@ Accepts three formats. All are parsed in local time:
 - `YYYY-MM-DD HH:mm:ss`
 - `YYYY-MM-DDTHH:mm:ss` (ISO-style `T` separator, normalized internally)
 
-Invalid dates return an ephemeral error message.
+Invalid dates return a private error message.
 
 ## Installation
 
