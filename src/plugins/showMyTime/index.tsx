@@ -1,50 +1,71 @@
 import definePlugin from "@utils/types";
-import { ApplicationCommandOptionType } from "@api/Commands";
+import { ApplicationCommandInputType, ApplicationCommandOptionType } from "@api/Commands";
+
+const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})(?:\s(\d{2}):(\d{2})(?::(\d{2}))?)?$/;
+
+function parseDate(input: string): number | null {
+    const m = input.replace("T", " ").match(DATE_RE);
+    if (!m) return null;
+
+    const [, yr, mo, dy, hr = "0", mi = "0", sc = "0"] = m;
+    const year = +yr, month = +mo, day = +dy, hour = +hr, min = +mi, sec = +sc;
+
+    if (month < 1 || month > 12 || day < 1 || hour > 23 || min > 59 || sec > 59)
+        return null;
+
+    const maxDay = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+    if (day > maxDay) return null;
+
+    return Math.floor(new Date(year, month - 1, day, hour, min, sec).getTime() / 1000);
+}
 
 export default definePlugin({
-    name: "ShowMyTime",
-    description: "Generates Discord timestamps based on local or custom time.",
+    name: "showMyTime",
+    description: "Generate Discord timestamps for event announcements. Displays in each viewer's timezone.",
     authors: [{ name: "Arthurdevon", id: 1072644260140163212n }],
-    tags: ["Utility", "Text"],
-    
+
     commands: [
         {
             name: "mytime",
-            description: "Gets a Discord timestamp for a specific or current time",
+            description: "Generate a Discord timestamp code",
+            inputType: ApplicationCommandInputType.BUILT_IN,
             options: [
                 {
                     type: ApplicationCommandOptionType.STRING,
                     name: "format",
-                    description: "Choose the display format",
+                    description: "Timestamp display format",
                     required: true,
                     choices: [
-                        { name: "Relative (Countdown)", value: "R" },
-                        { name: "Full Date and Time", value: "F" },
-                        { name: "Short Time", value: "t" }
+                        { name: "Short Time (16:20)", value: "t" },
+                        { name: "Long Time (16:20:30)", value: "T" },
+                        { name: "Short Date (2026-06-15)", value: "d" },
+                        { name: "Long Date (June 15, 2026)", value: "D" },
+                        { name: "Short Date/Time (June 15, 2026 16:20)", value: "f" },
+                        { name: "Full Date/Time (Monday, June 15, 2026 16:20)", value: "F" },
+                        { name: "Relative (in 2 hours)", value: "R" }
                     ]
                 },
                 {
                     type: ApplicationCommandOptionType.STRING,
                     name: "date",
-                    description: "Optional: Custom date (e.g., YYYY-MM-DD or Month DD YYYY)",
+                    description: "Date: YYYY-MM-DD, YYYY-MM-DD HH:mm, or YYYY-MM-DD HH:mm:ss (default: now)",
                     required: false
                 }
             ],
-            execute(args) {
-                const format = args[0].value;
-                const customDate = args[1]?.value;
-                let time = Math.floor(Date.now() / 1000);
+            execute(args: any[]) {
+                const format = args[0].value as string;
+                const dateArg = args[1]?.value as string | undefined;
 
-                if (customDate) {
-                    const parsed = Date.parse(customDate);
-                    if (!isNaN(parsed)) {
-                        time = Math.floor(parsed / 1000);
-                    } else {
-                        return { content: "❌ Invalid date format. Use YYYY-MM-DD (e.g., 2026-06-05) or English (e.g., June 5 2026)." };
-                    }
+                if (dateArg) {
+                    const unix = parseDate(dateArg);
+                    if (unix === null) return {
+                        content: `Invalid date: "${dateArg}". Use YYYY-MM-DD, YYYY-MM-DD HH:mm, or YYYY-MM-DD HH:mm:ss`,
+                        flags: 64 // ephemeral
+                    };
+                    return { content: `<t:${unix}:${format}>` };
                 }
 
-                return { content: `<t:${time}:${format}>` };
+                return { content: `<t:${Math.floor(Date.now() / 1000)}:${format}>` };
             }
         }
     ]
