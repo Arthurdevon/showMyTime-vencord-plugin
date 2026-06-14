@@ -2,23 +2,29 @@ import definePlugin from "@utils/types";
 import { ApplicationCommandInputType, ApplicationCommandOptionType, findOption } from "@api/Commands";
 import { copyToClipboard } from "@utils/clipboard";
 
+// discord wants unix seconds. js gives ms. cool cool cool.
 const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})(?:\s(\d{2}):(\d{2})(?::(\d{2}))?)?$/;
 
+// parse YYYY-MM-DD [HH:mm[:ss]] -> unix secs, or null if u typed garbage
 function parseDate(input: string): number | null {
-    const m = input.replace("T", " ").match(DATE_RE);
+    const m = input.replace("T", " ").match(DATE_RE); // kill the iso T, lazy but fine
     if (!m) return null;
 
     const [, yr, mo, dy, hr = "0", mi = "0", sc = "0"] = m;
     const year = +yr, month = +mo, day = +dy, hour = +hr, min = +mi, sec = +sc;
 
-    if (month < 1 || month > 12 || day < 1 || hour > 23 || min > 59 || sec > 59)
-        return null;
+    if (month < 1 || month > 12 || day < 1 || hour > 23 || min > 59 || sec > 59) return null;
 
-    const maxDay = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+    // leap year. dont @ me. yes the whole gregorian thing
+    const isLeap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const maxDay = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
     if (day > maxDay) return null;
 
+    // local time on purpose. dont touch
     return Math.floor(new Date(year, month - 1, day, hour, min, sec).getTime() / 1000);
 }
+
+// TODO: maybe "tomorrow 8pm" style input someday. probably never lol
 
 export default definePlugin({
     name: "showMyTime",
@@ -66,12 +72,13 @@ export default definePlugin({
                     };
                     unix = parsed;
                 } else {
-                    unix = Math.floor(Date.now() / 1000);
+                    unix = Math.floor(Date.now() / 1000); // just now
                 }
 
                 const code = `<t:${unix}:${format}>`;
-                copyToClipboard(code);
+                copyToClipboard(code); // straight to clipboard so u just paste
 
+                // flags 64 = ephemeral, only u see this
                 return {
                     content: `${new Date(unix * 1000).toLocaleString()} — ${code} (copied)`,
                     flags: 64
